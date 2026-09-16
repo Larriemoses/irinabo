@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f3f0e8;
+  --foreground: #17231d;
+  --ink: #17231d;
+  --forest: #163f32;
+  --leaf: #28735a;
+  --lime: #d9ef8b;
+  --paper: #faf8f2;
+  --orange: #e66b36;
+  --muted: #68736c;
+  --line: #d7d8ce;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, sans-serif;
+  margin: 0;
+}
+
+* { box-sizing: border-box; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea, select { font: inherit; }
+.display { font-family: var(--font-display), Georgia, serif; }
+.grid-noise {
+  background-image: linear-gradient(rgba(22,63,50,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(22,63,50,.055) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+.paper-shadow { box-shadow: 0 14px 40px rgba(28,48,38,.09); }
+@keyframes pulse-soft { 0%,100%{opacity:1} 50%{opacity:.45} }
+.pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }

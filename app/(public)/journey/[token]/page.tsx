@@ -1,0 +1,2 @@
+import Link from "next/link";import {Brand} from "@/components/Brand";import {JourneyMode} from "@/components/JourneyMode";
+export default function JourneyPage(){return <main className="grid-noise min-h-screen bg-[var(--paper)] px-5 py-6"><nav className="mx-auto flex max-w-5xl items-center justify-between"><Brand/><Link href="/" className="text-sm font-bold">Exit</Link></nav><div className="flex justify-center py-10"><JourneyMode/></div></main>}
