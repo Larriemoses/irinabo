@@ -7,7 +7,7 @@
 - **Human review:** Pending repository-owner review.
 - **Result:** Local report intake, protected routing, source comparison, Journey Mode, accountability receipt and Judge Mode are implemented. Provider delivery is labelled simulated.
 - **Verification:** `pnpm test` passed 10 tests across 3 files; `pnpm lint` passed; `pnpm build` completed a production build with 14 routes on 16 September 2026.
-- **Commit:** Not yet committed.
+- **Commit:** `c4c4887` — `feat: build IrinAbo proof of concept`.
 
 This log records completed work only. It is not a prompt transcript.
 
