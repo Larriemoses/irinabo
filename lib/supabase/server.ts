@@ -1,18 +1,43 @@
-import { createClient } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { getSupabaseAuthConfig, getSupabaseServiceConfig } from "@/lib/supabase/config";
 
-export function createServerSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+export async function createServerSupabaseSessionClient(): Promise<SupabaseClient | null> {
+  const config = getSupabaseAuthConfig();
+  if (!config) return null;
 
-  if (!url || !key) return null;
+  const cookieStore = await cookies();
 
-  return createClient(url, key, {
+  return createServerClient(config.url, config.anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll();
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options);
+          });
+        } catch {
+          // Cookie writes are not always available in Server Components.
+        }
+      },
+    },
+  });
+}
+
+export function createServerSupabaseServiceRoleClient() {
+  const config = getSupabaseServiceConfig();
+  if (!config) return null;
+
+  return createClient(config.url, config.serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
 
 export async function getSeededTrip() {
-  const client = createServerSupabase();
+  const client = createServerSupabaseServiceRoleClient();
   if (!client) return null;
 
   const { data, error } = await client

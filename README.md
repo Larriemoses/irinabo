@@ -18,18 +18,45 @@ This repository contains a runnable fictional demonstration. It does not guarant
 - Resolution receipt with append-only feedback
 - Read-only Judge Mode with honest capability labels
 - Supabase schema, RLS policies, fictional seed, and provider adapters
+- Staff auth boundary with organisation-scoped dashboard access
 
-## Run locally
+## Local setup
 
 Requires Node.js 20+ and pnpm.
 
 ```bash
 pnpm install
 cp .env.example .env.local
+```
+
+### Demo mode (no Supabase credentials)
+
+Leave `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` empty to run a labelled fictional demo.
+
+```bash
 pnpm dev
 ```
 
-Open `http://localhost:3000`. The proof of concept works in labelled demo mode without external credentials.
+- Public routes (`/`, `/report`, `/journey/demo-tw204`, `/receipt/demo-receipt`, `/judge`) stay available.
+- Dashboard routes stay functional with a clearly labelled demo identity.
+
+### Connected mode (Supabase Auth + RLS)
+
+1. Fill `.env.local` with `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`.
+2. Set `NEXT_PUBLIC_APP_URL` (for local development: `http://localhost:3000`).
+3. In Supabase Auth settings, add redirect URLs:
+   - `http://localhost:3000/auth/callback`
+   - your deployed callback URL (for example `https://your-host/auth/callback`)
+4. Apply database changes in order:
+   - `supabase/migrations/202609160001_initial.sql`
+   - `supabase/migrations/202609190001_staff_auth_rls.sql`
+   - `supabase/seed.sql`
+5. Create staff users in Supabase Auth and matching `profiles` + `staff_assignments` rows.
+6. Start the app with `pnpm dev` and sign in at `/staff/sign-in`.
+
+Email/password and magic-link sign-in are both available. Magic links require `NEXT_PUBLIC_APP_URL` and matching Supabase redirect configuration.
+
+## Verify
 
 ```bash
 pnpm test
@@ -67,6 +94,6 @@ flowchart LR
 
 Application rules choose access, routing, deadlines and recipients; AI cannot change them. Incoming text is untrusted data, Twilio webhooks require signature validation, provider IDs are unique, and protected access requires an explicit safety assignment.
 
-Apply `supabase/migrations/202609160001_initial.sql`, then `supabase/seed.sql`. Deploy over HTTPS for browser geolocation. Keep provider secrets server-side and use fictional data for judging.
+Keep provider secrets server-side and use fictional data for judging.
 
 See [project specification](docs/PROJECT_SPEC.md), [trust model](docs/TRUST_MODEL.md), [limitations](docs/LIMITATIONS.md), and [AI build log](docs/AI_BUILD_LOG.md). No licence has been added.
