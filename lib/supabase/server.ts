@@ -12,6 +12,14 @@ export function createServerSupabase() {
   });
 }
 
+export async function getPublicTrip(tripCode: string) {
+  const client = createServerSupabase();
+  if (!client) return null;
+  const { data, error } = await client.from("trips").select("id, trip_code, origin, destination, vehicle_label, status, scheduled_departure, organisations(name)").eq("trip_code", tripCode.toUpperCase()).maybeSingle();
+  if (error) throw new Error(`Public trip query failed: ${error.message}`);
+  return data;
+}
+
 export async function getSeededTrip(organisationId: string) {
   const client = await createAuthSupabase();
 
