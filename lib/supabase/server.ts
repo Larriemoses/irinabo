@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { createAuthSupabase } from "@/lib/supabase/auth";
 
 export function createServerSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -11,13 +12,13 @@ export function createServerSupabase() {
   });
 }
 
-export async function getSeededTrip() {
-  const client = createServerSupabase();
-  if (!client) return null;
+export async function getSeededTrip(organisationId: string) {
+  const client = await createAuthSupabase();
 
   const { data, error } = await client
     .from("trips")
     .select("id, trip_code, origin, destination, vehicle_label, status, scheduled_departure")
+    .eq("organisation_id", organisationId)
     .eq("trip_code", "TW204")
     .maybeSingle();
 

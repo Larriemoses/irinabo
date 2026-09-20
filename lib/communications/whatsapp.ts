@@ -13,3 +13,17 @@ export interface WhatsAppAdapter { send(to: string, body: string): Promise<{ id:
 export const simulatedWhatsApp: WhatsAppAdapter = {
   async send() { return { id: `sim-${crypto.randomUUID()}`, status: "simulated" }; },
 };
+
+export function getWhatsAppAdapter(): WhatsAppAdapter {
+  if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN || !process.env.TWILIO_WHATSAPP_NUMBER) return simulatedWhatsApp;
+  return {
+    async send(to, body) {
+      const auth = Buffer.from(`${process.env.TWILIO_ACCOUNT_SID}:${process.env.TWILIO_AUTH_TOKEN}`).toString("base64");
+      const params = new URLSearchParams({ From: process.env.TWILIO_WHATSAPP_NUMBER!, To: to.startsWith("whatsapp:") ? to : `whatsapp:${to}`, Body: body });
+      const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${process.env.TWILIO_ACCOUNT_SID}/Messages.json`, { method: "POST", headers: { authorization: `Basic ${auth}`, "content-type": "application/x-www-form-urlencoded" }, body: params });
+      if (!response.ok) throw new Error(`Twilio responded ${response.status}`);
+      const result = await response.json() as { sid: string; status?: string };
+      return { id: result.sid, status: "queued" };
+    },
+  };
+}
