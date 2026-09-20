@@ -27,7 +27,8 @@ export async function getSeededTrip(organisationId: string) {
     .from("trips")
     .select("id, trip_code, origin, destination, vehicle_label, status, scheduled_departure")
     .eq("organisation_id", organisationId)
-    .eq("trip_code", "TW204")
+    .order("created_at", { ascending: true })
+    .limit(1)
     .maybeSingle();
 
   if (error) throw new Error(`Supabase trip query failed: ${error.message}`);
