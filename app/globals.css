@@ -11,6 +11,8 @@
   --orange: #e66b36;
   --muted: #68736c;
   --line: #d7d8ce;
+  --font-sans: "Avenir Next", "Segoe UI", Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: Iowan Old Style, Palatino Linotype, Palatino, Georgia, Times New Roman, serif;
 }
 
 @theme inline {
