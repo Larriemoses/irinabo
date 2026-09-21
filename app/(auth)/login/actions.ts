@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { createAuthSupabase } from "@/lib/supabase/auth";
 
@@ -13,6 +14,8 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
   const supabase = await createAuthSupabase();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { error: "The email or password is incorrect." };
+  const cookieStore = await cookies();
+  cookieStore.set("irinabo_last_seen", String(Date.now()), { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/" });
   const destination = parsed.data.next?.startsWith("/") && !parsed.data.next.startsWith("//") ? parsed.data.next : "/dashboard";
   redirect(destination);
 }
@@ -20,5 +23,7 @@ export async function login(_state: LoginState, formData: FormData): Promise<Log
 export async function logout() {
   const supabase = await createAuthSupabase();
   await supabase.auth.signOut();
+  const cookieStore = await cookies();
+  cookieStore.delete("irinabo_last_seen");
   redirect("/login");
 }
