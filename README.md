@@ -6,18 +6,30 @@ IrinAbo is a WhatsApp-first journey reporting and coordination proof of concept.
 
 This repository contains a runnable fictional demonstration. It does not guarantee rescue, detect crime, provide continuous background tracking, dispatch an agency, or represent a verified transport operator.
 
-## Working vertical slice
+## Submission snapshot
 
-- Browser report simulator with fixed staff-involvement choice
-- Locked ordinary/protected routing and access denial tests
-- Original and conflicting source accounts side by side
-- AI adapter with deterministic non-AI fallback
-- Journey Mode and honest location lifecycle copy
-- Distinct web and WhatsApp location source labels
-- Acknowledgement states and authenticated server escalation worker
+The deployed proof of concept includes:
+
+- Authenticated company workspace and journey creation
+- Passenger journey links and QR entry
+- Passenger session creation and permission-based current-location snapshots
+- Signed Twilio WhatsApp webhook with JOIN + text-report flow and idempotent message storage
+- Locked ordinary/protected routing and role checks
+- Persisted incident ownership and action audit events
+- Original/conflicting source accounts in the demonstration scenario
+- AI report-extraction adapter with deterministic non-AI fallback
+- Server-side acknowledgement deadline/escalation worker (external call remains simulated)
 - Resolution receipt with append-only feedback
-- Read-only Judge Mode with honest capability labels
-- Supabase schema, RLS policies, fictional seed, and provider adapters
+- Read-only Judge Mode with explicit LIVE / SIMULATED / FICTIONAL / DEFERRED labels
+- Supabase schema, migrations, RLS policies, fictional seed data and provider adapters
+
+### Important scope boundaries
+
+- The browser `/report` experience is a **labelled demonstration flow**; the seeded browser report itself is not the production WhatsApp ingestion path.
+- WhatsApp **text** ingestion is implemented. Voice-note transcription and WhatsApp current-location ingestion are not part of the submitted live path.
+- Browser passenger pages can persist a one-time current-location snapshot with permission.
+- External voice escalation and public-agency dispatch are not live.
+- Unity Transit Demo, its staff, passengers and incidents are fictional.
 
 ## Run locally
 
@@ -29,7 +41,15 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Open `http://localhost:3000`. The proof of concept works in labelled demo mode without external credentials.
+Open `http://localhost:3000`.
+
+Without external credentials, the public demonstration pages and deterministic rules remain inspectable. Supabase-backed persistence, authenticated staff flows, Twilio and product-AI provider calls require the corresponding environment variables.
+
+### Database setup
+
+Apply **all SQL migrations in `supabase/migrations/` in filename order**, then apply `supabase/seed.sql` for the fictional TW204 demo data. Do not apply only the initial migration; later migrations add staff authentication, WhatsApp conversations, company staff, passenger sessions, incident assignment and journey creation permissions.
+
+After configuration:
 
 ```bash
 pnpm test
@@ -37,36 +57,40 @@ pnpm lint
 pnpm build
 ```
 
-## Demo route
+## Recommended judge path
 
-1. Open `/report`, submit the seeded report, and select that staff are involved.
-2. Open `/protected`, then case `IRN-204-031`.
-3. Compare the original accounts and both location sources.
-4. Open `/receipt/demo-receipt` and submit “This is not resolved.”
-5. Open `/judge` to inspect live and simulated capability labels.
-
-The fictional scenario uses Unity Transit Demo, vehicle UTD-07, and journey TW204 from Ikorodu Central Garage to Ibadan Main Garage.
+1. Open `/judge` first to see exactly what is live, simulated, fictional or deferred.
+2. Open the passenger journey `/journey/TW204`.
+3. Create a passenger session and optionally share one current browser location.
+4. If the Twilio Sandbox is available, join it and send `JOIN TW204`, then a short text concern.
+5. Use the authenticated staff workspace to review persisted incidents and accept responsibility.
+6. Use the protected demonstration scenario `/protected` → `IRN-204-031` to inspect conflicting accounts and protected routing.
+7. Open `/receipt/demo-receipt` and record whether the outcome matches what happened.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
   P[Passenger] --> W[WhatsApp adapter]
-  P --> J[Journey Mode]
+  P --> J[Journey / passenger web]
   W --> A[Next.js API]
   J --> A
-  A --> R{Locked route}
+  A --> R{Deterministic routing}
   R -->|Ordinary| G[Garage queue]
   R -->|Protected| S[Safety queue]
   A --> D[(Supabase + RLS)]
   A --> I[AI adapter + fallback]
-  S --> E[Independent fallback]
+  S --> E[Independent fallback simulation]
   G --> C[Resolution receipt]
   E --> C
 ```
 
-Application rules choose access, routing, deadlines and recipients; AI cannot change them. Incoming text is untrusted data, Twilio webhooks require signature validation, provider IDs are unique, and protected access requires an explicit safety assignment.
+Application rules choose access, routing, deadlines and recipients; AI cannot change them. Incoming text is treated as untrusted data, Twilio webhooks require signature validation, provider message IDs are deduplicated, and protected access requires the safety role.
 
-Apply `supabase/migrations/202609160001_initial.sql`, then `supabase/seed.sql`. Deploy over HTTPS for browser geolocation. Keep provider secrets server-side and use fictional data for judging.
+## AI development
 
-See [project specification](docs/PROJECT_SPEC.md), [trust model](docs/TRUST_MODEL.md), [limitations](docs/LIMITATIONS.md), and [AI build log](docs/AI_BUILD_LOG.md). No licence has been added.
+Codex was used as the primary coding agent for scaffolding, implementation, migrations, tests, debugging, documentation and deployment fixes. The repository owner supplied the original product concept, safety constraints, scope decisions and human oversight. See [AI build log](docs/AI_BUILD_LOG.md) and [AI-assisted decisions](docs/AI_DECISIONS.md).
+
+See also the [project specification](docs/PROJECT_SPEC.md), [trust model](docs/TRUST_MODEL.md), [limitations](docs/LIMITATIONS.md), and [demo script](docs/DEMO_SCRIPT.md).
+
+No licence has been added.
