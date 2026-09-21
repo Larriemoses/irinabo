@@ -7,8 +7,18 @@ import { getOrganisationIncidents, getSeededTrip } from "@/lib/supabase/server";
 
 export default async function Dashboard() {
   const staff = await requireStaff();
-  const storedTrip = await getSeededTrip(staff.organisationId);
-  const storedIncidents = await getOrganisationIncidents(staff.organisationId);
+  let storedTrip: Awaited<ReturnType<typeof getSeededTrip>> = null;
+  let storedIncidents: Awaited<ReturnType<typeof getOrganisationIncidents>> = [];
+  try {
+    storedTrip = await getSeededTrip(staff.organisationId);
+  } catch {
+    // A workspace should still open when trip data is temporarily unavailable.
+  }
+  try {
+    storedIncidents = await getOrganisationIncidents(staff.organisationId);
+  } catch {
+    // Incident data is optional for the overview shell.
+  }
   const displayedTrip = storedTrip ? {
     ...trip,
     code: storedTrip.trip_code,
