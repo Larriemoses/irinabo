@@ -8,6 +8,8 @@
   --leaf: #8ed9b4;
   --lime: #d7f58a;
   --paper: #10251d;
+  --surface: #dce9e1;
+  --surface-soft: #cdded5;
   --orange: #ff8a5b;
   --muted: #a2b5aa;
   --line: #29463a;
@@ -43,6 +45,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .surface { background: color-mix(in srgb, var(--paper) 92%, white 8%); border: 1px solid var(--line); }
 nav a[href="/register"] { color: var(--forest) !important; }
 
-/* Keep light surfaces readable when a page-level dark theme is inherited. */
-main .bg-white { color: var(--forest); }
+/* Keep light surfaces calm against the dark theme and readable at every level. */
+main .bg-white { background-color: var(--surface) !important; color: var(--forest); }
+main .bg-stone-50 { background-color: var(--surface-soft) !important; color: var(--forest); }
+main img.bg-white { background-color: #fff !important; }
 a.bg-\[var\(--lime\)\], button.bg-\[var\(--lime\)\] { color: var(--forest) !important; }
