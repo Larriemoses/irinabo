@@ -13,25 +13,27 @@
   --orange: #f59e72;
   --muted: #a6b0ad;
   --line: #3b4542;
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-display: Georgia, "Times New Roman", serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: Arial, Helvetica, sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, sans-serif;
+  font-family: var(--font-sans);
   margin: 0;
 }
 
 * { box-sizing: border-box; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea, select { font: inherit; }
-.display { font-family: var(--font-display), Georgia, serif; }
+.display { font-family: var(--font-display); }
 .grid-noise {
   background-image: linear-gradient(rgba(62,207,142,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(62,207,142,.09) 1px, transparent 1px);
   background-size: 26px 26px;

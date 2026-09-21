@@ -11,6 +11,14 @@
 
 This log records completed work only. It is not a prompt transcript.
 
+## 21 September 2026 — Submission readiness audit
+
+- **Task:** Verify the public build against the four hackathon deliverables and the live judge route.
+- **AI contribution:** Inspected the deployed routes and repository, reproduced the clean build, identified claim-to-behaviour mismatches, connected the browser report to its demo API, added a public read-only case, corrected the seeded journey link, removed runtime font downloads and prepared the submission documents.
+- **Human review:** Repository owner requested the audit before submission. Final merge and portal submission remain with the owner.
+- **Result:** The submission branch presents an honest public demonstration without judge credentials and records the known limits beside each simulated capability.
+- **Verification:** `pnpm test` passed 12 tests across 4 files; `pnpm lint` passed; `pnpm build` completed with 21 routes. The local demo API returned HTTP 201 and `/judge/case` returned HTTP 200.
+
 ## 16 September 2026 — Hosted Supabase foundation
 
 - **Task:** Create and connect the hosted persistence layer.
