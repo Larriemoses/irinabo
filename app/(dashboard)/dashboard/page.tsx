@@ -17,7 +17,7 @@ export default async function Dashboard() {
     vehicle: storedTrip.vehicle_label,
     status: storedTrip.status.replaceAll("_", " "),
   } : null;
-  const liveIncidents = storedIncidents.filter((item) => item.routing_class === "ORDINARY" ? canViewOrdinary(staff.role) : staff.role === "SAFETY_COORDINATOR").map((item) => ({ id: item.id, title: "Passenger report", reference: item.reference, responseState: item.response_state, owner: item.assigned_staff_id ? "Assigned staff" : null }));
+  const liveIncidents = storedIncidents.filter((item) => item.routing_class === "ORDINARY" ? canViewOrdinary(staff.role) : staff.role === "SAFETY_COORDINATOR").map((item) => ({ id: item.id, title: "Passenger report", reference: item.reference, responseState: item.response_state, owner: (item as { assigned_staff_id?: string | null }).assigned_staff_id ? "Assigned staff" : null }));
   const visibleIncidents = storedIncidents.length ? liveIncidents : storedTrip?.trip_code === "TW204" && canViewOrdinary(staff.role)
     ? incidents.filter((incident) => incident.routingClass === "ORDINARY")
     : [];

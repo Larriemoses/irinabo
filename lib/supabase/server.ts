@@ -38,7 +38,15 @@ export async function getSeededTrip(organisationId: string) {
 export async function getOrganisationIncidents(organisationId: string) {
   const client = createServerSupabase();
   if (!client) return [];
-  const { data, error } = await client.from("incidents").select("id, reference, routing_class, response_state, owner_id, assigned_staff_id, created_at, deadline_at, trip_id, trips!inner(organisation_id, trip_code)").eq("trips.organisation_id", organisationId).order("created_at", { ascending: false });
-  if (error) throw new Error(`Supabase incident query failed: ${error.message}`);
-  return data ?? [];
+  const select = "id, reference, routing_class, response_state, owner_id, assigned_staff_id, created_at, deadline_at, trip_id, trips!inner(organisation_id, trip_code)";
+  const { data, error } = await client.from("incidents").select(select).eq("trips.organisation_id", organisationId).order("created_at", { ascending: false });
+  if (!error) return data ?? [];
+
+  // Keep the workspace usable while an older hosted database finishes applying
+  // the staff-assignment migration. The incident itself remains available.
+  if (error.message.includes("assigned_staff_id") || error.message.includes("schema cache")) {
+    const fallback = await client.from("incidents").select("id, reference, routing_class, response_state, owner_id, created_at, deadline_at, trip_id, trips!inner(organisation_id, trip_code)").eq("trips.organisation_id", organisationId).order("created_at", { ascending: false });
+    return fallback.data ?? [];
+  }
+  return [];
 }
