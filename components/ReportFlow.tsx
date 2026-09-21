@@ -39,7 +39,7 @@ export function ReportFlow() {
     }
   }
 
-  const protectedRoute = choice !== "NO";
+  const protectedRoute = receipt ? receipt.routingClass !== "ORDINARY" : choice !== "NO";
   const options: Array<[ProtectionChoice, string, string]> = [
     ["YES", "Yes, staff are involved", "Use the identity-protected safety route"],
     ["NO", "No", "Use the ordinary garage coordinator route"],
@@ -66,7 +66,7 @@ export function ReportFlow() {
       <p className="mt-8 text-xs font-bold uppercase tracking-widest text-[var(--leaf)]">Step 2 of 3 · Routing choice</p>
       <h1 className="display mt-2 text-4xl">Does this involve the driver or transport staff?</h1>
       <p className="mt-3 leading-7 text-[var(--muted)]">Yes and prefer not to say use a restricted safety route. This controls visibility. It does not decide whether an account is true.</p>
-      <div className="mt-7 grid gap-3">{options.map(([value, label, description]) => <button key={value} onClick={() => setChoice(value)} className={`rounded-2xl border p-5 text-left ${choice === value ? "border-[var(--leaf)] bg-emerald-50" : "border-[var(--line)]"}`}><strong className="block">{label}</strong><span className="mt-1 block text-sm text-[var(--muted)]">{description}</span></button>)}</div>
+      <div className="mt-7 grid gap-3">{options.map(([value, label, description]) => <button key={value} disabled={submitting} onClick={() => setChoice(value)} className={`rounded-2xl border p-5 text-left disabled:opacity-60 ${choice === value ? "border-[var(--leaf)] bg-emerald-50" : "border-[var(--line)]"}`}><strong className="block">{label}</strong><span className="mt-1 block text-sm text-[var(--muted)]">{description}</span></button>)}</div>
       <div className="mt-6 rounded-2xl bg-[var(--forest)] p-5 text-white"><strong>Identity-protected is not anonymous.</strong><p className="mt-1 text-sm leading-6 text-white/65">IrinAbo and a configured messaging provider may process a phone number. Ordinary garage staff do not receive protected report content.</p></div>
       {error && <p role="alert" className="mt-5 rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">{error}</p>}
       <button disabled={submitting} onClick={submitDemoReport} className="mt-7 w-full rounded-full bg-[var(--orange)] px-6 py-4 font-bold text-white disabled:opacity-50">{submitting ? "Sending to demo API…" : "Send demo report →"}</button>

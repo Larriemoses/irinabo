@@ -7,7 +7,10 @@ import { getOrganisationIncidents, getSeededTrip } from "@/lib/supabase/server";
 
 export default async function Dashboard() {
   const staff = await requireStaff();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.startsWith("https://") ? process.env.NEXT_PUBLIC_APP_URL : "https://irinabo.vercel.app";
+  const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+  const appUrl = configuredAppUrl?.startsWith("https://") || configuredAppUrl?.startsWith("http://localhost")
+    ? configuredAppUrl
+    : "https://irinabo.vercel.app";
   let storedTrip: Awaited<ReturnType<typeof getSeededTrip>> = null;
   let storedIncidents: Awaited<ReturnType<typeof getOrganisationIncidents>> = [];
   try {
