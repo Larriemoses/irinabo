@@ -2,11 +2,12 @@ import Link from "next/link";
 import { StatusPill } from "@/components/StatusPill";
 import { incidents, trip } from "@/lib/demo/data";
 import { requireStaff, canViewOrdinary } from "@/lib/auth/staff";
-import { getSeededTrip } from "@/lib/supabase/server";
+import { getOrganisationIncidents, getSeededTrip } from "@/lib/supabase/server";
 
 export default async function Dashboard() {
   const staff = await requireStaff();
   const storedTrip = await getSeededTrip(staff.organisationId);
+  const storedIncidents = await getOrganisationIncidents(staff.organisationId);
   const displayedTrip = storedTrip ? {
     ...trip,
     code: storedTrip.trip_code,
@@ -15,7 +16,8 @@ export default async function Dashboard() {
     vehicle: storedTrip.vehicle_label,
     status: storedTrip.status.replaceAll("_", " "),
   } : null;
-  const visibleIncidents = storedTrip?.trip_code === "TW204" && canViewOrdinary(staff.role)
+  const liveIncidents = storedIncidents.filter((item) => item.routing_class === "ORDINARY" ? canViewOrdinary(staff.role) : staff.role === "SAFETY_COORDINATOR").map((item) => ({ id: item.id, title: "Passenger report", reference: item.reference, responseState: item.response_state, owner: item.owner_id ? "Assigned staff" : null }));
+  const visibleIncidents = storedIncidents.length ? liveIncidents : storedTrip?.trip_code === "TW204" && canViewOrdinary(staff.role)
     ? incidents.filter((incident) => incident.routingClass === "ORDINARY")
     : [];
 
