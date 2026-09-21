@@ -27,7 +27,7 @@ export async function getSeededTrip(organisationId: string) {
     .from("trips")
     .select("id, trip_code, origin, destination, vehicle_label, status, scheduled_departure")
     .eq("organisation_id", organisationId)
-    .order("created_at", { ascending: true })
+    .order("scheduled_departure", { ascending: true })
     .limit(1)
     .maybeSingle();
 
