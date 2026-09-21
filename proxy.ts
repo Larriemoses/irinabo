@@ -22,7 +22,8 @@ export async function proxy(request: NextRequest) {
   const protectedPath = request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/protected") ||
     request.nextUrl.pathname.startsWith("/incidents") ||
-    request.nextUrl.pathname.startsWith("/settings");
+    request.nextUrl.pathname.startsWith("/settings") ||
+    request.nextUrl.pathname.startsWith("/staff");
   if (!user && protectedPath) {
     const login = request.nextUrl.clone();
     login.pathname = "/login";
