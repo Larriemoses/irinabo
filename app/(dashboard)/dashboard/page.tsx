@@ -3,11 +3,15 @@ import { StatusPill } from "@/components/StatusPill";
 import { incidents, trip } from "@/lib/demo/data";
 import { requireStaff, canViewOrdinary } from "@/lib/auth/staff";
 import { getOrganisationIncidents, getSeededTrip } from "@/lib/supabase/server";
+import { createServerSupabase } from "@/lib/supabase/server";
+import { assignIncident } from "./assignment-actions";
 
 export default async function Dashboard() {
   const staff = await requireStaff();
   const storedTrip = await getSeededTrip(staff.organisationId);
   const storedIncidents = await getOrganisationIncidents(staff.organisationId);
+  const db = createServerSupabase();
+  const { data: companyStaff } = db ? await db.from("company_staff").select("id, full_name, active").eq("organisation_id", staff.organisationId).eq("active", true).order("full_name") : { data: [] };
   const displayedTrip = storedTrip ? {
     ...trip,
     code: storedTrip.trip_code,
@@ -16,7 +20,7 @@ export default async function Dashboard() {
     vehicle: storedTrip.vehicle_label,
     status: storedTrip.status.replaceAll("_", " "),
   } : null;
-  const liveIncidents = storedIncidents.filter((item) => item.routing_class === "ORDINARY" ? canViewOrdinary(staff.role) : staff.role === "SAFETY_COORDINATOR").map((item) => ({ id: item.id, title: "Passenger report", reference: item.reference, responseState: item.response_state, owner: item.owner_id ? "Assigned staff" : null }));
+  const liveIncidents = storedIncidents.filter((item) => item.routing_class === "ORDINARY" ? canViewOrdinary(staff.role) : staff.role === "SAFETY_COORDINATOR").map((item) => ({ id: item.id, title: "Passenger report", reference: item.reference, responseState: item.response_state, owner: item.assigned_staff_id ? "Assigned staff" : null }));
   const visibleIncidents = storedIncidents.length ? liveIncidents : storedTrip?.trip_code === "TW204" && canViewOrdinary(staff.role)
     ? incidents.filter((incident) => incident.routingClass === "ORDINARY")
     : [];
