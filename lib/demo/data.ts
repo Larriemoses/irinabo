@@ -72,7 +72,7 @@ export const locations = [
 ];
 
 export const capabilities = [
-  { name: "Browser report simulator", state: "LIVE", note: "Creates source-labelled demo reports through local API contracts." },
+  { name: "Browser report simulator", state: "LIVE", note: "Posts to the demo API and returns source-linked structured data. Shared persistence is deferred." },
   { name: "Protected routing and role checks", state: "LIVE", note: "Deterministic server rules with automated denial tests." },
   { name: "WhatsApp Sandbox", state: "SIMULATED", note: "Adapter and signed webhook endpoint included; credentials are not configured." },
   { name: "IrinAbo Call", state: "SIMULATED", note: "Server escalation worker and bounded route simulation." },
